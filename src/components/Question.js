@@ -1,28 +1,31 @@
-import { nanoid } from "nanoid";
 import { useState } from "react";
 
-function Question({ question, options }) {
+function Question({ question, options, onAnswer, correctAnswer, questionId }) {
   const question_with_entity = question;
   const decoded_question = { __html: question_with_entity };
-  const [isClicked, setIsClicked] = useState(null);
+  const [selectedOption, setSelectedOption] = useState(null);
+  // const [allSelectedOption, setAllSelectedOption] = useState(null);
 
-  function handleClick(id) {
-    console.log(id);
-    setIsClicked(id);
+  function handleOptionClick(option, questionId) {
+    console.log(option, questionId);
+    setSelectedOption(option.id);
+    onAnswer({answer: correctAnswer, choice: option.option, questionId: questionId})
   }
 
   return (
     <section>
       <p className="questions" dangerouslySetInnerHTML={decoded_question}></p>
       <div className="options">
-        {options.map((option, index) => {
+        {options.map((option) => {
           return (
             <span
-              key={index}
-              onClick={() => handleClick(index)}
-              className={isClicked === index ? "answer_clicked" : "answer"}
+              key={option.id}
+              onClick={() => handleOptionClick(option, questionId)}
+              className={
+                selectedOption === option.id ? "answer_clicked" : "answer"
+              }
             >
-              {option}
+              {option.option}
             </span>
           );
         })}
