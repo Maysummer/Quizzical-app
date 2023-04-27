@@ -91,9 +91,9 @@ function Quiz() {
           })}
       </div>
       <div className="check_answers">
-        <button onClick={() => handleCheckClick(selectedOptions)}>
+        {newQuestions && <button onClick={() => handleCheckClick(selectedOptions)}>
           Check answers
-        </button>
+        </button>}
       </div>
 
       <div className="other_page_bottom_blob">
