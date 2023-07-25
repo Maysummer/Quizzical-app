@@ -19,17 +19,16 @@ function QuizPage() {
       ].sort(() => Math.random() - 0.5);
       return {
         decoded_question,
+        correct_answer: question.correct_answer,
         options: shuffledOptions.map((option, optionIndex) => ({
           option,
           id: optionIndex,
         })),
-        correct_answer: question.correct_answer,
       };
     });
   }, [questions]);
 
   function handleOptionClick(questionIndex, optionIndex) {
-    console.log({ questionIndex, optionIndex });
     setSelectedOptions((prevSelectedOptions) => ({
       ...prevSelectedOptions,
       [questionIndex]: optionIndex,
@@ -51,7 +50,6 @@ function QuizPage() {
     setTotalScore(totalScore);
   }
 
-  console.log(questions, newQuestions, selectedOptions);
   return (
     <div>
       <div className="other_page_top_blob">
@@ -66,8 +64,8 @@ function QuizPage() {
       )}
       <div className="container">
         {!isLoadingQuestions &&
-          newQuestions.map((optionGroup, questionIndex) => {
-            const { decoded_question, options, correct_answer } = optionGroup;
+          newQuestions?.map((optionGroup, questionIndex) => {
+            const { decoded_question, correct_answer, options } = optionGroup;
             const selectedOptionIndex = selectedOptions[questionIndex];
             return (
               <section key={questionIndex}>
@@ -78,18 +76,43 @@ function QuizPage() {
                 <div>
                   {options.map((option, optionIndex) => {
                     const { option: optionText, id } = option;
+                    let optionStyle = {};
+                    if (!isButtonClicked) {
+                      if (selectedOptionIndex === optionIndex) {
+                        optionStyle = {
+                          backgroundColor: "#d6dbf5",
+                          border: "none",
+                        };
+                      } else {
+                        optionStyle = {};
+                      }
+                    } else {
+                      if (optionText === correct_answer) {
+                        optionStyle = {
+                          backgroundColor: "#94D7A2",
+                          border: "none",
+                        };
+                      } else if (
+                        selectedOptionIndex === optionIndex &&
+                        optionText !== correct_answer
+                      ) {
+                        optionStyle = {
+                          backgroundColor: "#F8BCBC",
+                          border: "none",
+                          opacity: "0.5",
+                        };
+                      } else {
+                        optionStyle = { opacity: "0.5" };
+                      }
+                    }
                     return (
                       <span
                         key={id}
-                        className={`answer`}
+                        className="answer"
                         onClick={() =>
                           handleOptionClick(questionIndex, optionIndex)
                         }
-                        style={
-                          selectedOptionIndex === optionIndex
-                            ? { backgroundColor: "#d6dbf5", border: "none" }
-                            : {}
-                        }
+                        style={optionStyle}
                       >
                         {optionText}
                       </span>
@@ -109,7 +132,12 @@ function QuizPage() {
             <p className="total_answers">
               You scored {totalScore} / {5} correct answers
             </p>
-            <button className="replay">Play again</button>
+            <button
+              className="replay"
+              onClick={() => window.location.reload(false)}
+            >
+              Play again
+            </button>
           </div>
         )}
       </div>
